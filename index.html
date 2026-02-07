@@ -3,59 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Stream Dash</title>
+    <title>Stream Dash Pro</title>
     <style>
+        * { box-sizing: border-box; }
         body, html { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; font-family: sans-serif; }
         
-        /* Nakładka do odblokowania dźwięku */
-        #audio-unlock {
+        /* Ekran startowy do odblokowania Audio i Interakcji */
+        #overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); color: white; z-index: 999;
-            display: flex; justify-content: center; align-items: center;
-            text-align: center; cursor: pointer;
+            background: #111; color: #fff; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            cursor: pointer;
         }
 
-        .container { display: flex; flex-direction: column; height: 100vh; }
+        .container { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
 
-        /* Czat - 70% ekranu */
-        #chat-frame { flex: 7; border: none; width: 100%; }
+        /* CZAT - zajmuje górę */
+        #chat-section { flex: 2; width: 100%; border-bottom: 2px solid #333; overflow: hidden; }
+        #chat-frame { width: 100%; height: 100%; border: none; }
 
-        /* Donejty - 30% ekranu */
-        #donate-container { 
-            flex: 3; 
-            border-top: 2px solid #222; 
-            position: relative;
-            background: transparent;
+        /* DONATE - tutaj dzieje się magia skalowania */
+        #donate-section { 
+            flex: 1; 
+            width: 100%; 
+            position: relative; 
+            background: #000; 
+            overflow: hidden; 
         }
 
+        /* Skalujemy iframe, żeby alerty nie były 'rozesrane' */
         #donate-frame {
-            width: 100%;
-            height: 100%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 1000px; /* Udajemy szeroki ekran */
+            height: 600px;
+            transform: translate(-50%, -50%) scale(0.4); /* Zmniejszamy widok do rozmiaru telefonu */
             border: none;
         }
     </style>
 </head>
 <body>
 
-    <div id="audio-unlock" onclick="this.style.display='none'">
-        <div style="padding: 20px; border: 2px solid #fff; border-radius: 10px;">
-            <h2>KLIKNIJ, ABY ODBLOKOWAĆ DŹWIĘK</h2>
-            <p>(Tipply wymaga interakcji, by grać alerty)</p>
-        </div>
+    <div id="overlay" onclick="startDash()">
+        <h1 style="color: #00ff00;">TAPNIJ EKRAN</h1>
+        <p>Aby odpalić dźwięk i czat</p>
     </div>
 
     <div class="container">
-        <iframe id="chat-frame" src="https://kick.com/popout/project-oaza/chat"></iframe>
-
-        <div id="donate-container">
+        <div id="chat-section">
+            <iframe id="chat-frame" src="https://kick.com/popout/project-oaza/chat"></iframe>
+        </div>
+        <div id="donate-section">
             <iframe 
                 id="donate-frame" 
                 src="https://widgets.tipply.pl/TIP_ALERT/a8a30c9e-10d2-4bb3-a126-78044eb3666d" 
-                allow="autoplay; encrypted-media" 
-                style="overflow:hidden;">
+                allow="autoplay; encrypted-media">
             </iframe>
         </div>
     </div>
 
+    <script>
+        function startDash() {
+            // Ukrywamy nakładkę
+            document.getElementById('overlay').style.display = 'none';
+            
+            // Wymuszamy "odświeżenie" iframe'ów po kliknięciu, co często odblokowuje audio
+            const dFrame = document.getElementById('donate-frame');
+            const originalSrc = dFrame.src;
+            dFrame.src = originalSrc;
+
+            // Tworzymy niewidzialny dźwięk, żeby "obudzić" przeglądarkę
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            oscillator.connect(audioCtx.destination);
+            oscillator.start();
+            oscillator.stop(0.01); 
+        }
+    </script>
 </body>
 </html>
