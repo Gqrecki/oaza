@@ -1,56 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="pl">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stream Dash</title>
     <style>
-        body { margin: 0; height: 100vh; display: flex; flex-direction: column; background: #000; overflow: hidden; }
-        iframe { border: none; width: 100%; flex-grow: 1; }
+        body, html { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; font-family: sans-serif; }
         
-        /* Kontenery na i-framy */
-        #top-wrap { height: 70%; min-height: 10%; }
-        #bottom-wrap { height: 30%; min-height: 10%; }
-
-        /* Pasek do przesuwania */
-        #resizer {
-            height: 10px;
-            background: #333;
-            cursor: row-resize;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* Nakładka do odblokowania dźwięku */
+        #audio-unlock {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); color: white; z-index: 999;
+            display: flex; justify-content: center; align-items: center;
+            text-align: center; cursor: pointer;
         }
-        #resizer::after { content: "="; color: white; font-weight: bold; }
+
+        .container { display: flex; flex-direction: column; height: 100vh; }
+
+        /* Czat - 70% ekranu */
+        #chat-frame { flex: 7; border: none; width: 100%; }
+
+        /* Donejty - 30% ekranu */
+        #donate-container { 
+            flex: 3; 
+            border-top: 2px solid #222; 
+            position: relative;
+            background: transparent;
+        }
+
+        #donate-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
     </style>
 </head>
 <body>
 
-    <div id="top-wrap">
-        <iframe src="https://kick.com/popout/project-oaza/chat" style="height: 100%; width: 100%;"></iframe>
+    <div id="audio-unlock" onclick="this.style.display='none'">
+        <div style="padding: 20px; border: 2px solid #fff; border-radius: 10px;">
+            <h2>KLIKNIJ, ABY ODBLOKOWAĆ DŹWIĘK</h2>
+            <p>(Tipply wymaga interakcji, by grać alerty)</p>
+        </div>
     </div>
 
-    <div id="resizer"></div>
+    <div class="container">
+        <iframe id="chat-frame" src="https://kick.com/popout/project-oaza/chat"></iframe>
 
-    <div id="bottom-wrap">
-        <iframe src="https://widgets.tipply.pl/TIP_ALERT/a8a30c9e-10d2-4bb3-a126-78044eb3666d" style="height: 100%; width: 100%;"></iframe>
+        <div id="donate-container">
+            <iframe 
+                id="donate-frame" 
+                src="https://widgets.tipply.pl/TIP_ALERT/a8a30c9e-10d2-4bb3-a126-78044eb3666d" 
+                allow="autoplay; encrypted-media" 
+                style="overflow:hidden;">
+            </iframe>
+        </div>
     </div>
 
-    <script>
-        const resizer = document.getElementById('resizer');
-        const topWrap = document.getElementById('top-wrap');
-        
-        resizer.addEventListener('touchstart', function(e) {
-            function drag(e) {
-                let clientY = e.touches[0].clientY;
-                let percentage = (clientY / window.innerHeight) * 100;
-                if(percentage > 10 && percentage < 90) {
-                    topWrap.style.height = percentage + '%';
-                }
-            }
-            document.addEventListener('touchmove', drag);
-            document.addEventListener('touchend', () => {
-                document.removeEventListener('touchmove', drag);
-            });
-        });
-    </script>
 </body>
 </html>
