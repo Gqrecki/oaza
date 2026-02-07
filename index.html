@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        body { margin: 0; height: 100vh; display: flex; flex-direction: column; background: #000; overflow: hidden; }
+        iframe { border: none; width: 100%; flex-grow: 1; }
+        
+        /* Kontenery na i-framy */
+        #top-wrap { height: 70%; min-height: 10%; }
+        #bottom-wrap { height: 30%; min-height: 10%; }
+
+        /* Pasek do przesuwania */
+        #resizer {
+            height: 10px;
+            background: #333;
+            cursor: row-resize;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #resizer::after { content: "="; color: white; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="top-wrap">
+        <iframe src="https://kick.com/popout/project-oaza/chat" style="height: 100%; width: 100%;"></iframe>
+    </div>
+
+    <div id="resizer"></div>
+
+    <div id="bottom-wrap">
+        <iframe src="https://widgets.tipply.pl/TIP_ALERT/a8a30c9e-10d2-4bb3-a126-78044eb3666d" style="height: 100%; width: 100%;"></iframe>
+    </div>
+
+    <script>
+        const resizer = document.getElementById('resizer');
+        const topWrap = document.getElementById('top-wrap');
+        
+        resizer.addEventListener('touchstart', function(e) {
+            function drag(e) {
+                let clientY = e.touches[0].clientY;
+                let percentage = (clientY / window.innerHeight) * 100;
+                if(percentage > 10 && percentage < 90) {
+                    topWrap.style.height = percentage + '%';
+                }
+            }
+            document.addEventListener('touchmove', drag);
+            document.addEventListener('touchend', () => {
+                document.removeEventListener('touchmove', drag);
+            });
+        });
+    </script>
+</body>
+</html>
